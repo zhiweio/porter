@@ -1,6 +1,10 @@
 # porter
 
-`porter` 一个旨在从多个来源读取数据缓存到 Redis 的命令行工具，支持断点续传，其目的不在于快速迁移数据，而是为了辅助数据清洗工作。支持数据库 MySQL、MongoDB， 文件格式 CSV、JSON 输入
+Porter 是一个数据清洗辅助工具，能够将 MySQL、MongoDB 和文本文件（CSV/TSV/JSON）等数据源数据全量扫描推入到 Redis 队列，支持断点续传、自定义等待延迟和 Batch Size。
+
+Topics
+Resources
+License
 
 ## 安装
 
