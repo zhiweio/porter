@@ -1,0 +1,27 @@
+---
+reader: file
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  db: 56
+  password: 123456
+  key: task_read_from_file
+  queue_key_prefix: porter.queue.
+  cache_key_prefix: porter.cache.
+
+file:
+  path: "./templates/data/MOCK_DATA.csv"
+  delimiter:
+  header: false
+
+# 指定附加字段一同上传 redis
+# appendices 内容格式为 ^\w+:\w+$，会被解析为 key-value，可以为多个
+# NOTE: header=false 时，appendices 无需指定格式，作为单个字符串以 `delimiter` 连接到每条文本数据后面
+
+#file:
+#  path: "./templates/data/MOCK_DATA.csv"
+#  delimiter: ","
+#  header: false
+#  appendices:
+#    - t_wandou_app_detail

@@ -1,0 +1,26 @@
+---
+reader: file
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  db:
+  password:
+  key:
+  queue_key_prefix: porter.queue.
+  cache_key_prefix: porter.cache.
+
+file:
+  path:
+  delimiter: ","
+  header: true
+
+# 指定附加字段一同上传 redis
+# appendices 内容格式为 ^\w+:\w+$，会被解析为 key-value，可以为多个
+
+#file:
+#  path:
+#  delimiter: ","
+#  header: true
+#  appendices:
+#    - data_source:t_wandou_app_detail

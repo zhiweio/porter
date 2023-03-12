@@ -1,0 +1,22 @@
+---
+reader: json
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  db: 56
+  password: 123456
+  key: task_read_from_json
+  queue_key_prefix: porter.queue.
+  cache_key_prefix: porter.cache.
+
+json:
+  path: "./templates/data/MOCK_DATA.json"
+
+# 指定附加字段一同上传 redis
+# appendices 内容格式为 ^\w+:\w+$，会被解析为 key-value，可以为多个
+
+#json:
+#  path: "./templates/data/MOCK_DATA.json"
+#  appendices:
+#    - data_source:t_wandou_app_detail

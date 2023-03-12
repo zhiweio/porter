@@ -1,0 +1,25 @@
+---
+reader: mysql
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  db:
+  password:
+  key:
+  queue_key_prefix: porter.queue.
+  cache_key_prefix: porter.cache.
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  db:
+  table:
+  user:
+  password:
+  pk:
+  column:
+
+# 指定附加字段一同上传 redis
+# appendices 内容格式为 ^\w+:\w+$，会被解析为 key-value，可以为多个
+# append_db_info=true 表示同时上传数据库名和表名
