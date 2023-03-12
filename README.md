@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-$ https://gitlab.com/zhiweio/porter.git && cd porter
+$ git clone https://github.com/zhiweio/porter.git && cd porter
 $ python3 setup.py install --user
 ```
 
@@ -116,7 +116,7 @@ mysql:
 ```yaml
 ---
 reader: mongo
-...略
+...
 
 mongo:
   host: "127.0.0.1"
@@ -134,7 +134,7 @@ mongo:
 ```yaml
 ---
 reader: json
-...略
+...
 
 json:
   path: /pathto/data/test.json
@@ -147,7 +147,7 @@ json:
 ```yaml
 ---
 reader: file
-...略
+...
 
 file:
   path: /pathto/data/test.csv
@@ -164,7 +164,7 @@ file:
 ```yaml
 ---
 reader: file
-...略
+...
 
 file:
   path: /pathto/data/test.csv
