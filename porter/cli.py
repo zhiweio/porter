@@ -15,13 +15,10 @@ from porter.reader import (
     FileReader,
     JsonReader,
     MongoReader,
-    MultiMySQLProxyReader,
-    MySQLProxyReader,
     MySQLReader,
 )
 
 REDAERS = {
-    "mysqlproxy": MySQLProxyReader,
     "mysql": MySQLReader,
     "json": JsonReader,
     "file": FileReader,
@@ -142,9 +139,7 @@ def main(
     verbose,
     debug_file,
 ):
-    """A command line tool for extracting data and load into Redis.
-
-    """
+    """A command line tool for extracting data and load into Redis."""
     # set log
     configure_logger(stream_level="DEBUG" if verbose else "INFO", debug_file=debug_file)
     # task template
