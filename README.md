@@ -1,86 +1,94 @@
-# porter
+[中文](./README_zh.md)
 
-Porter 是一个数据清洗辅助工具，能够将 MySQL、MongoDB 和文本文件（CSV/TSV/JSON）等数据源数据全量扫描推入到 Redis 队列，支持断点续传、自定义等待延迟和 Batch Size。
+# Porter
 
-## 安装
+Porter is a data cleaning tool designed to assist with full data extraction from MySQL, MongoDB, and text files (CSV/TSV/JSON) and push them into Redis queues. It supports features like resumable uploads, customizable wait delays, and configurable batch sizes.
+
+## Installation
 
 ```bash
 $ git clone https://github.com/zhiweio/porter.git && cd porter
 $ python3 setup.py install --user
 ```
 
-## 使用
+## Usage
 
-### 配置参数说明
+### Configuration Parameters
 
-**读取方式**
+**Reader Types**
+
+Specify the data source type:
 
 ```yaml
 reader: [mysql|mongo|json|file|csv]
 ```
 
-**redis 配置**
+**Redis Configuration**
+
+Configure Redis connection and data queue settings:
 
 ```yaml
 redis:
-  host: 主机地址
-  port: 端口
-  db: 库
-  password:
-  key: 任务名称
-  queue_key_prefix: 数据队列名前称缀，留空则默认为`porter.queue.`
-  cache_key_prefix: 缓存名前称缀，留空则默认 `porter.cache.`
+  host: Redis server address
+  port: Redis port
+  db: Redis database number
+  password: Redis password (optional)
+  key: Task name
+  queue_key_prefix: Prefix for data queue names (defaults to `porter.queue.` if left empty)
+  cache_key_prefix: Prefix for cache names (defaults to `porter.cache.` if left empty)
 ```
 
-**MySQL 配置**
+**MySQL Configuration**
 
 ```yaml
 mysql:
-  host: 主机地址
-  port: 端口
-  db: 数据库
-  table: 表名
-  user: 用户名
-  password: 密码
-  pk: 表的主键，留空默认 `id`
-  column: 需要上传的字段名，留空默认选取全部字段
-  append_db_info: 可选，是否同时上传库名表名信息，true OR false，默认 false
-  appendices: 可选，指定附加字段数据上传，详细配置见模板文件
+  host: MySQL server address
+  port: MySQL port
+  db: Database name
+  table: Table name
+  user: MySQL username
+  password: MySQL password
+  pk: Primary key (defaults to `id` if left empty)
+  column: Columns to upload (uploads all columns if left empty)
+  append_db_info: Optional, upload database and table names (true or false, defaults to false)
+  appendices: Optional, additional fields to upload (refer to the template file for details)
 ```
 
-**MongoDB 配置**
+**MongoDB Configuration**
 
 ```yaml
 mongo:
-  host: 主机地址
-  port: 端口
-  db: 库
-  collection: 集合
-  user: 用户名
-  password: 密码
-  column: 需要上传的字段名，留空默认选取全部字段
-  appendices: 同上
+  host: MongoDB server address
+  port: MongoDB port
+  db: Database name
+  collection: Collection name
+  user: MongoDB username
+  password: MongoDB password
+  column: Columns to upload (uploads all columns if left empty)
+  appendices: Same as above
 ```
 
-**文本文件配置**
+**Text File Configuration**
+
 ```yaml
 file:
-  path: 文件路径
-  delimiter: 文件分隔符
-  header: true: 使用 header 拼接为 json 格式数据; false: 不处理上传整条数据
-  appendices: 同上
+  path: File path
+  delimiter: File delimiter
+  header: true if the first row is a header (uploads data as JSON); false if not (uploads raw data)
+  appendices: Same as above
 ```
 
-**JSON 文件配置**
+**JSON File Configuration**
+
 ```yaml
 json:
-  path: 文件路径
-  appendices: 同上
+  path: File path
+  appendices: Same as above
 ```
 
-### 使用示例
+### Usage Examples
 
-**MySQL**
+**MySQL Configuration Example**
 
 ```yaml
 ---
@@ -90,7 +98,7 @@ redis:
   host: "127.0.0.1"
   port: 6379
   db: 56
-  password: 123456
+  password: "123456"
   key: task_read_from_mysql
   queue_key_prefix: porter.queue.
   cache_key_prefix: porter.cache.
@@ -101,17 +109,16 @@ mysql:
   db: db_economic
   table: t_macroindex
   user: test
-  password: 123456
+  password: "123456"
   pk: id
-  column:
+  column: 
 
-# 指定附加字段一同上传 redis
-# appendices 内容格式为 ^\w+:\w+$，会被解析为 key-value，可以为多个
-# append_db_info=true 表示同时上传数据库名和表名
-
+# Additional fields can be uploaded to Redis.
+# The format of appendices should be ^\w+:\w+$, interpreted as key-value pairs.
+# Set append_db_info to true to also upload database and table names.
 ```
 
-**MongoDB**
+**MongoDB Configuration Example**
 
 ```yaml
 ---
@@ -125,11 +132,10 @@ mongo:
   collection: TLDetailData
   user: root
   password: "123456"
-  column:
-
+  column: 
 ```
 
-**JSON**
+**JSON File Example**
 
 ```yaml
 ---
@@ -137,12 +143,12 @@ reader: json
 ...
 
 json:
-  path: /pathto/data/test.json
+  path: /path/to/data/test.json
 #  appendices:
 #    - field_name:"hello world"
 ```
 
-**CSV**
+**CSV File Example**
 
 ```yaml
 ---
@@ -150,16 +156,16 @@ reader: file
 ...
 
 file:
-  path: /pathto/data/test.csv
+  path: /path/to/data/test.csv
   delimiter: ","
-  header: True
+  header: true
 #  appendices:
 #    - field_name:"hello world"
 ```
 
-**普通文件**
+**Plain Text File Example**
 
-> 上传原始数据，不做 json 拼接处理
+Upload raw data without JSON formatting:
 
 ```yaml
 ---
@@ -167,68 +173,64 @@ reader: file
 ...
 
 file:
-  path: /pathto/data/test.csv
-  delimiter:
+  path: /path/to/data/test.csv
+  delimiter: 
   header: false
 #  appendices:
 #    - "hello world"
 ```
 
-### 命令功能详解
+### Command Usage
 
 ```bash
 Usage: porter [OPTIONS] [sync|monitor|clear|new]
 
-  A command line tool for extracting data and load into Redis.
-
-
+  A command-line tool for extracting data and loading it into Redis.
 
 Options:
   -V, --version                   Show the version and exit.
-  -f, --config-file PATH          Task config file
-  -l, --limit INTEGER             Limit of each reading from data source
-                                  [default: 1000]
-
-  --limit-scale INTEGER           The maximum lengeth of redis queue is (limit
-                                  * scale)  [default: 3]
-
-  --blocking / -B, --no-blocking  Enable blocking mode  [default: True]
-  -t, --time-sleep INTEGER        Time to wait when up to the maximum limit of
-                                  queue  [default: 10]
-
+  -f, --config-file PATH          Path to the task config file.
+  -l, --limit INTEGER             Limit the number of records read from the data source per batch [default: 1000].
+  --limit-scale INTEGER           Maximum Redis queue size is (limit * scale) [default: 3].
+  --blocking / -B, --no-blocking  Enable blocking mode [default: True].
+  -t, --time-sleep INTEGER        Time (in seconds) to wait when the queue reaches the maximum limit [default: 10].
   -C, --clean-type [status|queue|all]
-                                  Type of redis cache
+                                  Type of Redis cache to clear.
   -T, --task-type [mysql|mongo|json|file|csv]
-                                  Type of task template
-  -o, --output-task-file PATH     Save task template into file
-  -v, --verbose                   Print debug information
-  --debug-file PATH               File to be used as a stream for DEBUG
-                                  logging
-
-  -h, --help                      Show this message and exit.
+                                  Type of task template.
+  -o, --output-task-file PATH     Save task template to a file.
+  -v, --verbose                   Enable verbose mode (print debug information).
+  --debug-file PATH               Path to a file for DEBUG logging.
+  -h, --help                      Show help information and exit.
 ```
 
-1. sync 同步数据
-2. monitor 监控任务状态
-3. clear 清空任务状态
-4. new 创建新的任务模板
+1. **sync**: Synchronize data.
+2. **monitor**: Monitor the task status.
+3. **clear**: Clear the task status.
+4. **new**: Create a new task template.
 
-每次读取 100 条数据并上传，超过最大限制数量则停止读取
+### Example Commands
+
+Sync 100 records at a time and stop when the maximum queue limit is reached:
+
 ```bash
 $ porter sync -f task_template.yaml -l 100
 ```
 
-读取全部数据并上传
+Sync all data without blocking:
+
 ```bash
 $ porter sync -f task_template.yaml --no-blocking
 ```
 
-打印详细日志
+Sync data with verbose logging:
+
 ```bash
 $ porter sync -f task_template.yaml -l 100 -v --debug-file /tmp/porter.log
 ```
 
-查看任务进度
+Monitor the task progress:
+
 ```bash
 $ porter monitor -f task_template.yaml
 {
@@ -236,59 +238,28 @@ $ porter monitor -f task_template.yaml
     "table": "t_macroindex",
     "count": 61,
     "page": 6,
-    "record": {xxx}
+    "record": { ... }
 }
 ```
 
-清空缓存数据
-- all 所有
-- status 任务状态
-- queue 队列数据
+Clear cache data (options: `all`, `status`, or `queue`):
 
 ```bash
 $ porter clear -f task_template.yaml --clean-type all
 ```
 
-创建一个任务配置模板
-
-[mysql|mongo|json|file|csv]
+Create a task configuration template (options: `mysql`, `mongo`, `json`, `file`, `csv`):
 
 ```bash
 $ porter new -T mysql
-
----
-reader: mysql
-
-redis:
-  host: "127.0.0.1"
-  port: 6379
-  db:
-  password:
-  key:
-  queue_key_prefix: porter.queue.
-  cache_key_prefix: porter.cache.
-
-mysql:
-  host: "127.0.0.1"
-  port: 3306
-  db:
-  table:
-  user:
-  password:
-  pk:
-  column:
-
-# 指定附加字段一同上传 redis
-# appendices 内容格式为 ^\w+:\w+$，会被解析为 key-value，可以为多个
-# append_db_info=true 表示同时上传数据库名和表名
 ```
 
-创建任务模板并写入到指定文件
+Create a task template and save it to a file:
 
 ```bash
 $ porter new -T mysql -o /tmp/mysql.yaml
 ```
 
-## 注意事项
+## Notes
 
-每个数据同步任务都必须是唯一指定的 `cache_key_prefix` + `key`，但是可以多个任务往同一个队列里推数据，即多个任务可以用相同的 `queue_key_prefix` + `key`
+Each data sync task must have a unique combination of `cache_key_prefix` + `key`. However, multiple tasks can push data to the same queue, meaning they can share the same `queue_key_prefix` + `key`.
